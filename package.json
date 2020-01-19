@@ -1,0 +1,31 @@
+{
+  "name": "simplicibuild",
+  "version": "0.1.0",
+  "description": "A simpel way of making beautiful websites",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Toeffe3/SimpliciBuild.git"
+  },
+  "keywords": [
+    "Webpage-Builder",
+    "simpel",
+    "builder",
+    "html",
+    "js",
+    "css"
+  ],
+  "author": "Toeffe3",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Toeffe3/SimpliciBuild/issues"
+  },
+  "homepage": "https://github.com/Toeffe3/SimpliciBuild#readme",
+  "dependencies": {
+    "electron": "^7.1.9",
+    "menu": "^0.2.5"
+  }
+}

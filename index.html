@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>SimpliciBuild</title>
+    <script src="pages.js" charset="utf-8"></script>
+    <script src="layouts.js" charset="utf-8"></script>
+    <style media="screen"></style>
+  </head>
+  <body>
+    <script type="text/javascript">
+
+      function load() {
+        for (pagecnt of json) {
+          let childrens = [], events = {};
+          for (tag of Object.keys(pagecnt))
+          if(isTag(tag)) childrens.push(createElement(tag, [pagecnt.layout], [pagecnt[tag]]));
+          else if (tag != "layout") events[tag] = pagecnt[tag];
+          let page = createElement("DIV", ["pages", pagecnt.layout], childrens);
+          for (e of Object.keys(events)) page[e] = new Function(events[e]);
+          if(page.beforeonload)page.beforeonload(localthis=page);
+          document.body.appendChild(page);
+        }
+
+        for (page of document.getElementsByClassName("pages"))if(page.onload)page.onload(localthis=page);
+        let style = document.getElementsByTagName("STYLE")[0];
+        for (userdefined of Object.keys(layouts))
+        for (layout of Object.keys(layouts[userdefined])) {
+          style.innerHTML += ((userdefined == "tags")?"":("."+userdefined+" "))+(layout.replace("0",""))+" {\n";
+          for (properties of Object.keys(layouts[userdefined][layout||0])) style.innerHTML += "\t\t"+properties+": "+layouts[userdefined][layout||0][properties]+";\n";
+          style.innerHTML += "}\n\n";
+        }
+
+        function createElement(type, clss, inner) {
+          type = type.replace(/@\d/,"").split("."), elem = document.createElement(type.shift());
+          for (t of type) clss.push(t);
+          for (c of clss) elem.className += c+" ";
+          elem.className = elem.className.substr(0,elem.className.length-1);
+          for (i of inner)
+          if (typeof i == "string") elem.innerHTML += i;
+          else if(i instanceof HTMLElement) elem.appendChild(i);
+          return elem;
+        }
+
+        function isTag(text) {
+          return text.toString().split(".")[0]==text.toString().split(".")[0].toUpperCase();
+        }
+      }
+
+      load()
+
+      function refresh() {
+        while(document.body.children.length > 1) document.body.lastChild.remove();
+        load();
+      }
+    </script>
+  </body>
+</html>
