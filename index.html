@@ -9,7 +9,10 @@
   </head>
   <body>
     <script type="text/javascript">
-
+      document.onclick = function() {
+        for(el of document.getElementsByClassName('delete')) el.classList.remove('delete');
+        document.getElementsByClassName('contextmenu')[0].style.display = 'none';
+      }
       function load() {
         for (pagecnt of json) {
           let childrens = [], events = {};
