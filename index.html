@@ -3,15 +3,38 @@
   <head>
     <meta charset="utf-8">
     <title>SimpliciBuild</title>
-    <script src="pages.js" charset="utf-8"></script>
-    <script src="layouts.js" charset="utf-8"></script>
     <style media="screen"></style>
-  </head>
   <body>
     <script type="text/javascript">
+      const fs = require('fs');
+      const { promisify } = require('util');
+      const readFileAsync = promisify(fs.readFile);
+      const writeFileAsync = promisify(fs.writeFile);
+
+      async function getData(func, ...paths) {
+        let arr = [];
+        for (path of paths) {
+          let p = await readFileAsync(path);
+          arr.push(JSON.parse(p.toString()));
+        } func(arr);
+      }
+
+      var pages, layouts, themes = {"default": {}};
+
+      getData(function(data) {
+        [pages, layouts, tempthemes] = data;
+        for (temptheme of Object.keys(tempthemes))
+          themes[temptheme] = tempthemes[temptheme];
+        load();
+      }, 'pages.json', 'layouts.json', 'themes.json');
+
+      document.onclick = function() {
+        for(el of document.getElementsByClassName('delete')) el.classList.remove('delete');
+        document.getElementsByClassName('contextmenu')[0].style.display = 'none';
+      }
 
       function load() {
-        for (pagecnt of json) {
+        for (pagecnt of pages) {
           let childrens = [], events = {};
           for (tag of Object.keys(pagecnt))
           if(isTag(tag)) childrens.push(createElement(tag, [pagecnt.layout], [pagecnt[tag]]));
@@ -25,10 +48,33 @@
         for (page of document.getElementsByClassName("pages"))if(page.onload)page.onload(localthis=page);
         let style = document.getElementsByTagName("STYLE")[0];
         for (userdefined of Object.keys(layouts))
-        for (layout of Object.keys(layouts[userdefined])) {
-          style.innerHTML += ((userdefined == "tags")?"":("."+userdefined+" "))+(layout.replace("0",""))+" {\n";
-          for (properties of Object.keys(layouts[userdefined][layout||0])) style.innerHTML += "\t\t"+properties+": "+layouts[userdefined][layout||0][properties]+";\n";
-          style.innerHTML += "}\n\n";
+          for (layout of Object.keys(layouts[userdefined])) {
+            style.innerHTML += ((userdefined == "tags")?"":("."+userdefined+" "))+(layout.replace("0",""))+" {\n";
+            for (properties of Object.keys(layouts[userdefined][layout||0])) style.innerHTML += "\t\t"+properties+": "+layouts[userdefined][layout||0][properties]+";\n";
+            style.innerHTML += "}\n\n";
+          }
+
+        for (userdefined of Object.keys(themes)) {
+          for (theme of Object.keys(themes[userdefined])) {
+            style.innerHTML += ((userdefined == "tags")?"":(".pages.page."+userdefined+" "))+(theme.replace("0",""))+" {\n";
+            for (properties of Object.keys(themes[userdefined][theme||0])) style.innerHTML += "\t\t"+properties+": "+themes[userdefined][theme||0][properties]+";\n";
+            style.innerHTML += "}\n\n";
+          }
+        }
+
+        let themeselect = document.getElementsByClassName("themesselect");
+        for (select of themeselect) {
+          select.onchange = function(evt) {
+            let t = evt.path[1].classList;
+            t = t.value.split(" ");
+            if(t.length > 2) {
+              t.pop();
+              evt.path[1].classList = t.join(" ");
+            }
+            evt.path[1].classList.add(evt.target.children[evt.target.selectedIndex].value);
+          }
+          for (userdefined of Object.keys(themes))
+          select.innerHTML += "<OPTION value='"+userdefined+"'>"+toUpperCase(userdefined)+"</OPTION>";
         }
 
         function createElement(type, clss, inner) {
@@ -47,12 +93,17 @@
         }
       }
 
-      load()
-
       function refresh() {
         while(document.body.children.length > 1) document.body.lastChild.remove();
         load();
       }
+
+      function toUpperCase(s,q=1,g) {
+        return s.replace(new RegExp(typeof q=="number"?".{"+q+"}":typeof q=="string"?q.replace(/^\/|\/$/g,""):q,g?"g":""),function(s){
+          return s.toUpperCase();
+        });
+      }
+
     </script>
   </body>
 </html>

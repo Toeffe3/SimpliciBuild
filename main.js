@@ -1,5 +1,6 @@
-const {app, Menu, MenuItem, BrowserWindow} = require('electron')
-const path = require('path')
+const {app, Menu, MenuItem, BrowserWindow} = require('electron');
+const path = require('path');
+const fs = require('fs');
 const isMac = process.platform === 'darwin'
 const template = [
   ...(isMac ? [{
@@ -90,7 +91,10 @@ let mainWindow;
 function createWindow () {
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   mainWindow.loadFile('index.html');
