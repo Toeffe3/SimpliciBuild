@@ -1,0 +1,22 @@
+{
+	"bright": {
+		"0": {
+			"background-color": "#ffffff",
+			"color": "#000000"
+		}
+	},
+
+	"dark": {
+		"0": {
+			"background-color": "#1c1c1c",
+			"color": "#c9c9c9"
+		}
+	},
+
+	"fire": {
+		"0": {
+			"background-color": "#ff4242",
+			"color": "#ffdc71"
+		}
+	}
+}
