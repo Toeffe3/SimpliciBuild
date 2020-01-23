@@ -30,13 +30,14 @@ const template = [
       { type: 'separator' },
       { label: 'Settings', click: () =>  { console.log("SETTINGS") }},
       { type: 'separator' },
+      { role: 'reload' },
       isMac ? { role: 'close' } : { role: 'quit' }
     ]
   },
   {
     label: 'Edit',
     submenu: [
-      { label: 'Save', click: () =>  { console.log("SAVE") } },
+      { label: 'Save', accelerator: "CmdOrCtrl+S", click: () =>  { console.log("SAVE") } },
       { type: 'separator' },
       { role: 'undo' },
       { role: 'redo' },
@@ -45,7 +46,7 @@ const template = [
       { role: 'copy' },
       { role: 'paste' },
       { type: 'separator' },
-      { label: 'Project settings', click: () =>  { console.log("PROJECT SETTINGS") } }
+      { label: 'Project settings', accelerator: "CmdOrCtrl+,", click: () =>  { console.log("PROJECT SETTINGS") } }
     ]
   },
   {
@@ -58,7 +59,7 @@ const template = [
       { label: 'Add internationality', click: () =>  { console.log("Add internationality") } },
       { type: 'separator' },
       { label: 'Preview', click: () =>  { console.log("Preview") } },
-      { label: 'Export', click: () =>  { console.log("Export") } },
+      { label: 'Export', accelerator: "CmdOrCtrl+E", click: () =>  { console.log("Export") } },
     ]
   },
   {
