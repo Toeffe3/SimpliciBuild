@@ -1,4 +1,5 @@
-const {app, Menu, MenuItem, BrowserWindow} = require('electron');
+const {app, Menu, MenuItem, dialog, BrowserWindow} = require('electron');
+const ipcMain = require('electron').ipcMain;
 const path = require('path');
 const fs = require('fs');
 const isMac = process.platform === 'darwin'
@@ -6,39 +7,40 @@ const template = [
   ...(isMac ? [{
     label: app.name,
     submenu: [
-      { role: 'about' },
-      { type: 'separator' },
-      { role: 'services' },
-      { type: 'separator' },
-      { role: 'hide' },
-      { role: 'hideothers' },
-      { role: 'unhide' },
-      { type: 'separator' },
-      { role: 'quit' }
+      {role: 'about'},
+      {type: 'separator'},
+      {role: 'services'},
+      {type: 'separator'},
+      {role: 'hide'},
+      {role: 'hideothers'},
+      {role: 'unhide'},
+      {type: 'separator'},
+      {role: 'quit'}
     ]
   }] : []),
   {
     label: 'File',
     submenu: [
-      { label: 'Open', click: () =>  { console.log("OPEN") } },
+      {label: 'Open', click: () =>  {console.log("OPEN");}},
       {
         label: 'Recent opened', submenu: [
-          { label: '(none)' },
-          { type: 'separator' },
-          { label: 'Clear all' }
+          {label: '(none)'},
+          {type: 'separator'},
+          {label: 'Clear all', click: () => {app.clearRecentDocument();}}
         ]
       },
-      { type: 'separator' },
-      { label: 'Settings', click: () =>  { console.log("SETTINGS") }},
-      { type: 'separator' },
-      { role: 'reload' },
-      isMac ? { role: 'close' } : { role: 'quit' }
+      {type: 'separator'},
+      {label: 'Settings', click: () =>  {console.log("SETTINGS");}},
+      {type: 'separator'},
+      {role: 'reload'},
+      isMac ? {role: 'close'} : {role: 'quit'}
     ]
   },
   {
     label: 'Edit',
     submenu: [
-      { label: 'Save', accelerator: "CmdOrCtrl+S", click: () =>  { console.log("SAVE") } },
+      { label: 'Save', accelerator: "CmdOrCtrl+S", click: () =>  { saveAs(); } },
+      { label: 'SaveAs', accelerator: "CmdOrCtrl+Shift+S", click: () =>  { saveAs(true); } },
       { type: 'separator' },
       { role: 'undo' },
       { role: 'redo' },
@@ -82,11 +84,48 @@ const template = [
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
 
-// app.addRecentDocument('/Users/USERNAME/Desktop/work.type')
-// app.clearRecentDocument()
+let mainWindow, pages = {}, layouts = {}, themes = {"default": {}}, savePath, readOnly = true;
 
+ipcMain.handle('save', async function(event, ...args) {
+  console.log("Auto-save", args);
+  pages = args[0];
+  layouts = args.length > 2 ? args[1] : {};
+  themes = args.length > 3 ? args[2] : {};
+  return saveAs(false);
+});
 
-let mainWindow;
+async function saveAs(ask=false) {
+  console.log(readOnly, "RO", ask, "A");
+  if(readOnly || ask) {
+    let saveInfo = await dialog.showSaveDialog({
+      properties: ["createDirectory"],
+      filters: [
+        {name: "JavaScript Object", extensions: ["json"]},
+        {name: "SimpliciBuild Export", extensions: ["sbe"]},
+        {name: "ZIP file", extensions: ["zip", "rar", "7z"]}
+      ]
+    });
+    if (saveInfo.canceled) return false;
+    savePath = saveInfo.filePath;
+    let extension = savePath.split(".")[1];
+    console.log(savePath, extension);
+  }
+  if (savePath === undefined) {
+    return ask?"No destination":"Could not save!";
+  } else if(pages) {
+    fs.writeFile(savePath, JSON.stringify(pages), {encoding: 'utf8', flag: 'w'}, function(err) {
+      if(err) console.log("An error ocurred saving the file "+ err.message);
+      else {
+        console.log("The file has been succesfully saved");
+        app.addRecentDocument(savePath);
+        readOnly = false;
+      }
+    });
+  } else {
+    console.log("Could not load content to file");
+  }
+  return savePath;
+}
 
 function createWindow () {
   mainWindow = new BrowserWindow({
