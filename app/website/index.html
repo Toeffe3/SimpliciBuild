@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>SimpliciBuild</title>
+    <style media="screen"></style>
+    <script src="compiler.js" charset="utf-8"></script>
+    <script src="loader.js" charset="utf-8"></script>
+  <body onload="load()">
+    <script type="text/javascript">
+    const fs = require('fs');
+    const { promisify } = require('util');
+    const readFileAsync = promisify(fs.readFile);
+    const writeFileAsync = promisify(fs.writeFile);
+    const ipcRenderer = require('electron').ipcRenderer;
+    </script>
+  </body>
+</html>

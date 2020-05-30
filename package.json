@@ -4,7 +4,7 @@
   "description": "A simpel way of making beautiful websites",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron app/main.js"
   },
   "repository": {
     "type": "git",

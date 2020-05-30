@@ -88,7 +88,7 @@ let mainWindow, pages = {}, layouts = {}, themes = {"default": {}}, savePath, re
 
 ipcMain.handle('save', async function(event, ...args) {
   console.log("Auto-save", args);
-  pages = args[0];
+  pages = await args[0];
   layouts = args.length > 2 ? args[1] : {};
   themes = args.length > 3 ? args[2] : {};
   return saveAs(false);
@@ -106,9 +106,8 @@ async function saveAs(ask=false) {
       ]
     });
     if (saveInfo.canceled) return false;
-    savePath = saveInfo.filePath;
-    let extension = savePath.split(".")[1];
-    console.log(savePath, extension);
+    savePath = saveInfo.filePath.replace(/\\/g, "/");
+    console.log(savePath);
   }
   if (savePath === undefined) {
     return ask?"No destination":"Could not save!";
@@ -122,7 +121,7 @@ async function saveAs(ask=false) {
       }
     });
   } else {
-    console.log("Could not load content to file");
+    console.log("Could not load content, pages undefined");
   }
   return savePath;
 }
@@ -136,7 +135,7 @@ function createWindow () {
     }
   });
 
-  mainWindow.loadFile('index.html');
+  mainWindow.loadFile('website/index.html');
   mainWindow.webContents.openDevTools();
   mainWindow.on('closed', function () {
     mainWindow = null;
