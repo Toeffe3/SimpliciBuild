@@ -6,13 +6,13 @@
     <style media="screen"></style>
     <script src="compiler.js" charset="utf-8"></script>
     <script src="loader.js" charset="utf-8"></script>
-  <body onload="load()">
     <script type="text/javascript">
-    const fs = require('fs');
-    const { promisify } = require('util');
-    const readFileAsync = promisify(fs.readFile);
-    const writeFileAsync = promisify(fs.writeFile);
-    const ipcRenderer = require('electron').ipcRenderer;
+      const fs = require('fs');
+      const { promisify } = require('util');
+      const readFileAsync = promisify(fs.readFile);
+      const writeFileAsync = promisify(fs.writeFile);
+      const ipcRenderer = require('electron').ipcRenderer;
     </script>
+  <body onload="load()">
   </body>
 </html>

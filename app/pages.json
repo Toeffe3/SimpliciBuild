@@ -1,16 +1,5 @@
 [
-  [
-    {"H6": "+"},
-    {"layout": "addpage"},
-    {"onbeforeload": "pages.unshift(pages[pages.length-1]);"},
-    {"onclick": "pages.splice(pages.length-3,0,pages[pages.length-1]);refresh();"}
-  ],
-  [ {"comment": "Context menu (right-click) for deleting elements"},
-    {"P": "Delete"},
-    {"layout": "contextmenu"},
-    {"onclick": "var el=document.getElementsByClassName('delete')[0];while(el.classList[0]!='pages')el=el.parentNode;el.remove();"}
-  ],
-  [
+  [ {"comment": "Template for new 'pages'"},
     {"H1": "This is the header"},
     {"SELECT.themesselect": ""},
     {"P": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident: sunt in culpa qui officia deserunt mollit anim id est laborum."},
@@ -19,5 +8,16 @@
     {"onload": "localthis.children[0].contentEditable=true;localthis.children[2].contentEditable=true;for(let e of Object.keys(themes)) localthis.children[1].innerHTML += '<OPTION value='+e+'>'+toUpperCase(e)+'</OPTION>';"},
     {"oncontextmenu": "var cm=document.getElementsByClassName('contextmenu')[0];cm.style.left=event.clientX-100+'px';cm.style.top=event.clientY-100+'px';cm.style.display='block';event.target.classList.add('delete');return false"},
     {"onclick": "undefined"}
+  ],
+  [ {"comment": "Context menu (right-click) for deleting elements"},
+    {"P": "Delete"},
+    {"layout": "contextmenu"},
+    {"onclick": "var el=document.getElementsByClassName('delete')[0];while(el.classList[0]!='pages')el=el.parentNode;el.remove();"}
+  ],
+  [
+    {"H6": "+"},
+    {"layout": "addpage"},
+    {"onbeforeload": ""},
+    {"onclick": "pages.push(pages[0]); refresh();"}
   ]
 ]

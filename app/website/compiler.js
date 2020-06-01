@@ -9,7 +9,6 @@ function compile() {
       let clss = tag.match(/^[^\.]+/)?tag.replace(/^[^\.]+/, "").split("."):[];
       clss.shift();
       clss.unshift(...layout)
-      console.log(tag, clss);
       if(isTag(tag)) childrens.push(createAElement(tag, clss, [cnt[tag]]));
       else if (tag != "layout" && tag != "comment") events[tag] = cnt[tag];
     }
@@ -58,4 +57,36 @@ function toUpperCase(s,q=1,g) {
   return s.replace(new RegExp(typeof q=="number"?".{"+q+"}":typeof q=="string"?q.replace(/^\/|\/$/g,""):q,g?"g":""),function(s){
     return s.toUpperCase();
   });
+}
+
+function decompile(all=false) {
+  let childs = document.body.children, out = [];
+  for(let i = 0; i < childs.length; i++)
+    if(all || childs[i].classList.contains("page")) {
+      let page = [];
+      for(let elem of childs[i].children) {
+        let obj = {};
+        obj[elem.tagName+elem.classList.toString().replace(/page/g,"").replace(/(?:^| )([^ ])/, ".$1")] = elem.innerHTML;
+        page.push(obj);
+      }
+      let list = childs[i].classList.value.replace(/pages ?/g,"");
+      page.push({layout: list})
+      for (let evt of testEvents(childs[i])) {
+        let obj = {};
+        obj[evt[0]] = evt[1].toString().replace(/\n?\r?/g,"").replace(/function anonymous\(\) \{(.*?)}/,"$1");
+        page.push(obj);
+      }
+      out.push(page);
+    }
+  return out;
+}
+
+const evts = [
+  "onbeforeload", "onclick", "onchange", "onload", "onmousemove", "onmouseup", "onmousedown", "onmouseenter", "onmouseleave", "onmouseout", "onmousewheel",
+]
+function testEvents(dom) {
+  console.log(dom);
+  let out = [];
+  for(evt of evts) if(dom[evt]) out.push([evt, dom[evt]])
+  return out;
 }

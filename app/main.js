@@ -84,47 +84,21 @@ const template = [
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
 
-let mainWindow, pages = {}, layouts = {}, themes = {"default": {}}, savePath, readOnly = true;
+let mainWindow;
 
-ipcMain.handle('save', async function(event, ...args) {
-  console.log("Auto-save", args);
-  pages = await args[0];
-  layouts = args.length > 2 ? args[1] : {};
-  themes = args.length > 3 ? args[2] : {};
-  return saveAs(false);
+ipcMain.handle('saveAs', async function(event) {
+  let saveInfo = await dialog.showSaveDialog({
+    properties: ["createDirectory"],
+    filters: [
+      {name: "JavaScript Object", extensions: ["json"]},
+      {name: "SimpliciBuild Export", extensions: ["sbe"]},
+      {name: "ZIP file", extensions: ["zip", "rar", "7z"]}
+    ]
+  });
+
+  if (saveInfo.canceled) return false;
+  return saveInfo.filePath.replace(/\\/g, "/");
 });
-
-async function saveAs(ask=false) {
-  console.log(readOnly, "RO", ask, "A");
-  if(readOnly || ask) {
-    let saveInfo = await dialog.showSaveDialog({
-      properties: ["createDirectory"],
-      filters: [
-        {name: "JavaScript Object", extensions: ["json"]},
-        {name: "SimpliciBuild Export", extensions: ["sbe"]},
-        {name: "ZIP file", extensions: ["zip", "rar", "7z"]}
-      ]
-    });
-    if (saveInfo.canceled) return false;
-    savePath = saveInfo.filePath.replace(/\\/g, "/");
-    console.log(savePath);
-  }
-  if (savePath === undefined) {
-    return ask?"No destination":"Could not save!";
-  } else if(pages) {
-    fs.writeFile(savePath, JSON.stringify(pages), {encoding: 'utf8', flag: 'w'}, function(err) {
-      if(err) console.log("An error ocurred saving the file "+ err.message);
-      else {
-        console.log("The file has been succesfully saved");
-        app.addRecentDocument(savePath);
-        readOnly = false;
-      }
-    });
-  } else {
-    console.log("Could not load content, pages undefined");
-  }
-  return savePath;
-}
 
 function createWindow () {
   mainWindow = new BrowserWindow({

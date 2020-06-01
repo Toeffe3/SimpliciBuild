@@ -14,8 +14,29 @@ async function getData(func, ...paths) {
   } func(arr);
 }
 
-async function load() {
+async function saveAs() {
+  savePath = await ipcRenderer.invoke("saveAs");
   console.log(savePath);
+  refresh();
+}
+
+async function save(fun) {
+  const data = JSON.stringify(decompile(true));
+  console.log(data);
+  await writeFileAsync(savePath, data, {encoding: 'utf8', flag: 'w'}, function(err) {
+    if(err) console.log("An error ocurred saving the file "+ err.message);
+    else {
+      console.log("The file has been succesfully saved");
+      return fun();
+    }
+  });
+  return false;
+}
+
+async function load() {
+  pages = undefined, layouts = undefined, themes = {"default": {}}, tempthemes = undefined;
+  while(document.body.children.length > 1) document.body.lastChild.remove();
+
   await getData(function(data) {
     [pages, layouts, tempthemes] = data;
     for (temptheme of Object.keys(tempthemes))
@@ -38,9 +59,7 @@ async function load() {
 }
 
 async function refresh() {
-  savePath = await ipcRenderer.invoke("save", pages, layouts, themes);
-  pages = undefined, layouts = undefined, themes = {"default": {}}, tempthemes = undefined;
-  while(document.body.children.length > 1) document.body.lastChild.remove();
-  console.log(savePath);
-  load();
+  await save(() => {
+    load();
+  });
 }

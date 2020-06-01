@@ -12,7 +12,7 @@
 		"h1": {
 			"white-space": "nowrap"
 		},
-		"div.pages:last-child": {
+		"div.pages:first-child": {
 			"display": "none"
 		}
 	},
