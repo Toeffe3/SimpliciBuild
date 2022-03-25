@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/Toeffe3/SimpliciBuild#readme",
   "dependencies": {
-    "electron": "^11.5.0",
+    "electron": "^13.6.6",
     "menu": "^0.2.5"
   }
 }
